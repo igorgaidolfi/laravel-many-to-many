@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Type;
+use App\Models\Technology;
 
 class ProjectController extends Controller
 {
@@ -31,7 +32,8 @@ class ProjectController extends Controller
     public function create()
     {
         $types = Type::all();
-        return view ('admin.projects.create',compact('types'));
+        $technologies = Technology::all();
+        return view ('admin.projects.create',compact('types', 'technologies'));
     }
 
     /**
@@ -78,7 +80,8 @@ class ProjectController extends Controller
     public function edit(Project $project)
     {
         $types = Type::all();
-        return view ('admin.projects.edit', compact('project','types'));
+        $technologies = Technology::all();
+        return view ('admin.projects.edit', compact('project','types', 'technologies'));
     }
 
     /**
@@ -91,7 +94,6 @@ class ProjectController extends Controller
     public function update(UpdateProjectRequest $request, Project $project)
     {
         $form_data = $request->all();
-        $project->title = $form_data['title'];
         if($request->hasFile('img')){
             if($project->img != null){
                 Storage::disk('public')->delete($project->img);
@@ -99,9 +101,16 @@ class ProjectController extends Controller
             $path= Storage::disk('public')->put('project_image', $form_data['img']);
                 $project->img = $path;
             }
+        $project->type_id = $form_data['type_id'];
         $slug = Str::slug($form_data['title'],'-');
         $project->slug = $slug;
         $project->content = $form_data['content'];
+        if($exists->isNotEmpty()){
+            return redirect()->route('admin.projects.edit', compact('project'))->withErrors(['Titolo gia\' inserito']);
+        }
+        $exists = Project::where('title','LIKE', $form_data['title'])
+        ->where('id', '!=', $project->id)->get();
+        $project->title = $form_data['title'];
         $project->update();
 
         return redirect()->route('admin.projects.index');
