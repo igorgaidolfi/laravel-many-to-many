@@ -56,6 +56,9 @@ class ProjectController extends Controller
         $proj->slug = $slug;
         $proj->content = $form_data['content'];
         $proj->save();
+        if($request->has('technologies')){
+            $proj->technologies()->attach($form_data['technologies']);
+        }
 
         return redirect()->route('admin.projects.index');
     }

@@ -30,19 +30,19 @@
                 <select name="type_id" id="type_id" class="form-select">
                     <option value="">Seleziona tipologia</option>
                     @foreach ($types as $type) 
-                        <option value="{{$type->id}}" @selected($type-> == old('type_id'))>{{$type->name}}</option>
+                        <option value="{{$type->id}}" @selected($type->id == old('type_id'))>{{$type->name}}</option>
                     @endforeach
                 </select>
             </div>
             <div class="form-group mb-3">
                 <label class="form-label">Seleziona software</label>
-                <select name="type_id" id="type_id" class="form-select">
+                <div>
                     @foreach ($technologies as $technology) 
-                    <input type="checkbox" name="" id="">
-                    <option value="">Seleziona tipologia</option>
-                    <option value="{{$type->id}}" @selected($type-> == old('type_id'))>{{$type->name}}</option>
+                    <input type="checkbox" name="technologies[]" id="technology-{{$technology->id}}" class="form-check-input"
+                        value="{{$technology->id}}" @checked(is_array(old('technologies')) && in_array($technology->id, old('technologies')))>
+                    <label for="" class="form-check-label me-2">{{$technology->name}}</label>
                     @endforeach
-                </select>
+                </div>
             </div>
             <div class="form-group mb-3">
                 <label for="content" class="form-label">Contenuto</label>
